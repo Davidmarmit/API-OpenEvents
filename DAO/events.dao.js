@@ -1,29 +1,14 @@
-const GenericDAO = require("./generic.dao");
+const tabla = 'events';
 
-class PostsDAO extends GenericDAO {
+class EventsDAO {
 
-    constructor() {
-        super("post")
-    }
-
-    async post(post) {  //añadir un nuevo post
+    async postEvent(event, owner_id) {  //añadir un nuevo event
         // INSERT INTO ?? (??) values (??)
-        const results = await global.connection.promise().query(`INSERT INTO ?? (idUser, UIDimagen) VALUES (${post.idUser}, "${post.UIDimagen}")`, [this.tabla]);
-        return results;
-    }
-
-    async getPostsUser(idUser) {  //saber posts hechos por id de user
-        // SELECT * FROM ?? WHERE idUser = 'params.idUser'
-        const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE idUser = ${idUser}`, [this.tabla]);
-        return results;
-    }
-
-    async getNumPosts(idUser) {  //saber numero posts hechos por user
-        //SELECT COUNT(*) FROM ?? WHERE idUser = 'params.idUser'
-        const [results] = await global.connection.promise().query(`SELECT COUNT(*) FROM ?? WHERE idUser = ${idUser}`, [this.tabla]);
+        const results = await global.connection.promise().query(`INSERT INTO ?? (name, owner_id, date, image, location, description, eventStart_date, eventEnd_date, n_participators, type) VALUES ("${event.name}", ${owner_id}, "${Date.now()}", "${event.image}", "${event.location}", "${event.description}", "${event.eventStart_date}", "${event.eventEnd_date}", ${event.n_participators}, "${event.type},")`, [this.tabla]);
+        console.log(results);
         return results;
     }
 
 }
 
-module.exports = PostsDAO
+module.exports = EventsDAO

@@ -1,10 +1,6 @@
-const GenericDAO = require("./generic.dao");
+const tabla = 'friends';
 
-class CommentsDAO extends GenericDAO {
-    
-    constructor() {
-        super("comment")
-    }
+class FriendsDAO {
 
     async post(comment) {  //añadir un nuevo comment
         // INSERT INTO ?? (??) values (??)
@@ -31,4 +27,4 @@ class CommentsDAO extends GenericDAO {
     }
 }
 
-module.exports = CommentsDAO
+module.exports = FriendsDAO

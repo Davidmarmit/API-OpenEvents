@@ -1,11 +1,7 @@
-const GenericDAO = require("./generic.dao");
+const tabla = 'assistances';
 
-class CommentsDAO extends GenericDAO {
+class AssistancesDAO {
     
-    constructor() {
-        super("comment")
-    }
-
     async post(comment) {  //añadir un nuevo comment
         // INSERT INTO ?? (??) values (??)
         const results = await global.connection.promise().query(`INSERT INTO ?? (idUser, idPost, idComent, contenido) VALUES (${comment.idUser}, ${comment.idPost}, ${comment.idComment}, "${comment.contenido}")`, [this.tabla]);
@@ -31,4 +27,4 @@ class CommentsDAO extends GenericDAO {
     }
 }
 
-module.exports = CommentsDAO
+module.exports = AssistancesDAO

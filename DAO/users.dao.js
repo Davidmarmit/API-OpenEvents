@@ -1,10 +1,6 @@
-const GenericDAO = require("./generic.dao");
+const tabla = 'users';
 
-class UsersDAO extends GenericDAO {
-
-    constructor() {
-        super("user")
-    }
+class UsersDAO {
 
     async post(user) {  //añadir un nuevo user
         // INSERT INTO ?? (??) values (??)
