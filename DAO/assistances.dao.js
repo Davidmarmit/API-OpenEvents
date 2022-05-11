@@ -1,10 +1,7 @@
-const GenericDAO = require("./generic.dao");
+const tabla = 'assistances';
 
-class CommentsDAO extends GenericDAO {
-    
-    constructor() {
-        super("comment")
-    }
+class CommentsDAO {
+
 
     async post(comment) {  //añadir un nuevo comment
         // INSERT INTO ?? (??) values (??)

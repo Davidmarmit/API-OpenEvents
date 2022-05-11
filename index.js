@@ -26,26 +26,7 @@ app.use("/messages" , messagesRoute);
 app.use("/friends" , friendsRoute);
 app.use("/assistances" , assistances);
 
-app.post('/login', async (req, res, next) => {  //Autenticar un usuario
 
-    const { email, password } = req.body;
-    const bcrypt = require("bcrypt");
-    const [user] = await global.connection.promise().query(`SELECT * FROM user WHERE email = "${email}"`);
-
-    // si no existe el usuario
-    if (!user) return next("user not found")
-
-    // si la contraseña no es correcta
-    if (!bcrypt.compareSync(password, user[0].password)) return next("wrong password")
-
-    const jwt = require('jsonwebtoken');
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_KEY); 
-
-    console.log("Usuario logeado correctamente: ", token);
-  
-    res.json({ accessToken: token });
-
-})
 
 app.get('*', (req, res) => {
     res.json({ error: "404"});

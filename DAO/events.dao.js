@@ -1,10 +1,7 @@
-const GenericDAO = require("./generic.dao");
+const tabla = 'events';
 
-class PostsDAO extends GenericDAO {
+class PostsDAO {
 
-    constructor() {
-        super("post")
-    }
 
     async post(post) {  //añadir un nuevo post
         // INSERT INTO ?? (??) values (??)
