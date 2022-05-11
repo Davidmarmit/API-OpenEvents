@@ -1,7 +1,7 @@
 const tabla = 'assistances';
 
 class AssistancesDAO {
-    
+
     async post(comment) {  //añadir un nuevo comment
         // INSERT INTO ?? (??) values (??)
         const results = await global.connection.promise().query(`INSERT INTO ?? (idUser, idPost, idComent, contenido) VALUES (${comment.idUser}, ${comment.idPost}, ${comment.idComment}, "${comment.contenido}")`, [this.tabla]);
