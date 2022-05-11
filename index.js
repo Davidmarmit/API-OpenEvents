@@ -26,8 +26,6 @@ app.use("/messages" , messagesRoute);
 app.use("/friends" , friendsRoute);
 app.use("/assistances" , assistances);
 
-
-
 app.get('*', (req, res) => {
     res.json({ error: "404"});
 })

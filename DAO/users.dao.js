@@ -25,9 +25,9 @@ class UsersDAO {
 
     }
 
-    async post(user,next) {
+    async post(user) {
         // INSERT INTO ?? (??) values (??)
-        try{
+        try {
             const [results] = global.connection.promise().query(`INSERT INTO ${tabla} (??) values (\"${user.name}\", \"${user.last_name}\", \"${user.email}\", \"${user.password}\", \"${user.image}\")`, [["name", "last_name", "email", "password", "image"]]);
             return results;
         } catch (error) {
