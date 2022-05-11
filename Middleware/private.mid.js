@@ -9,7 +9,7 @@ function privateRoute(req, res, next) {  //creamos ruta privada
 
     if (token) {
 
-        var decoded = jwt.verify(token, process.env.JWT_KEY);
+        let decoded = jwt.verify(token, process.env.JWT_KEY);
 
         if (decoded) { 
 

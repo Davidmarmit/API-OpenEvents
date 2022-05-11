@@ -18,8 +18,7 @@ class UsersDAO {
         if (!bcrypt.compareSync(password, user[0].password)) return next("wrong password")
 
         const jwt = require('jsonwebtoken');
-        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_KEY);
-
+        const token = jwt.sign({ id: user[0].id, email: user[0].email }, process.env.JWT_KEY, { expiresIn: "12h" })
         console.log("Usuario logeado correctamente: ", token);
 
         return token;

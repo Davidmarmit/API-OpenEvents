@@ -33,7 +33,7 @@ router.post("/", async (req, res, next) => {  //Añadir un usuario, encriptando 
 })
 
 router.put("/:id", privateRoute, async (req, res, next) => {  //Editar un usuario, solo el usuario mismo
-    if (req.USER_ID == req.params.id) return next("eres tu")
+    if (req.USER_ID === req.params.id) return next("eres tu")
     res.json(await udao.update(req.params.id, req.body));
 })
 
