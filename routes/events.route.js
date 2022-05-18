@@ -48,4 +48,29 @@ router.get("/search/", privateRoute, async (req, res, next) => {
     }
 })
 
+router.put("/:id", privateRoute, async (req, res, next) => {
+    try {
+        res.json(await edao.putEventsEdit(req.params.id, req.body));
+    } catch (err) {
+        next ("wrongGetEvent");
+    }
+})
+
+router.delete("/:id", privateRoute, async (req, res, next) => {
+    try {
+        res.json(await edao.deleteEvents(req.params.id));
+    } catch (err) {
+        next ("errorDeleting");
+    }
+})
+
+router.get("/:id/assistances", privateRoute, async (req, res, next) => {
+    try {
+        res.json(await edao.getEventsAssistancesId(req.params.id));
+    } catch (err) {
+        next ("wrongGetEvent");
+    }
+})
+
+
 module.exports = router;

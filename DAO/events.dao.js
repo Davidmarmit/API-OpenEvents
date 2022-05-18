@@ -107,6 +107,50 @@ class EventsDAO {
         }
 
     }
+
+    async putEventsEdit (id, body) {
+
+        try {
+                
+            const add = await global.connection.promise().query(`UPDATE ?? SET name = "${body.name}", image = "${body.image}", location = "${body.location}", description = "${body.description}", eventStart_date = "${body.eventStart_date}", eventEnd_date = "${body.eventEnd_date}", n_participators = ${body.n_participators}, type = "${body.type}" WHERE id = ${id}`, [tabla]);
+            const results = await global.connection.promise().query(`SELECT name, image, location, description, eventStart_date, eventEnd_date, n_participators, type, owner_id, date, slug FROM ?? WHERE id = ${id}`, [tabla]);
+            return results[0];
+
+        } catch (error) {
+            return res.json({ error: error });
+        }
+
+    }
+
+    async deleteEvents (id) {
+
+        try {
+                
+            const borrar = await global.connection.promise().query(`DELETE FROM ?? WHERE id = ${id}`, [tabla]);
+            const results = {"Mensaje": `${id} ha sido eliminado`};
+            return results;
+
+        } catch (error) {
+            return res.json({ error: error });
+        }
+
+    }
+
+    async getEventsAssistancesId (id) {
+
+        try {
+                
+            const results = await global.connection.promise().query(`SELECT user_id as id, user.name, user.last_name, user.email, assitance.puntuation, assitance.comentary FROM assitance, user  WHERE event_id = ${id} AND user.user_id = ${id}` , [tabla]);
+            return results;
+
+        } catch (error) {
+            return res.json({ error: error });
+        }
+
+    }
+    
+    
+
 }
 
 module.exports = EventsDAO

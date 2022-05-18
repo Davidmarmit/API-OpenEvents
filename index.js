@@ -50,6 +50,9 @@ app.use((err, req, res, next) => {
         case "wrongGetEvent":
                 res.status(400).json({error: "Error al cargar los eventos"});
                 break;
+        case "errorDeleting":
+            res.status(400).json({error: "Error al eliminar los eventos"});
+            break;
       default:
         res.status(500).json({ error: err })
         break;
