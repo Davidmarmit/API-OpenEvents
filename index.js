@@ -44,9 +44,12 @@ app.use((err, req, res, next) => {
             console.log(err)
             res.status(401).json({ error: "no tienes permisos" })
             break;
-        case "eres tu":
-            res.status(401).json({ error: "eres tu" })
+        case "wrongEvent":
+            res.status(400).json({error: "Error al crear el evento"});
             break;
+        case "wrongGetEvent":
+                res.status(400).json({error: "Error al cargar los eventos"});
+                break;
       default:
         res.status(500).json({ error: err })
         break;
