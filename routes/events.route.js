@@ -72,5 +72,21 @@ router.get("/:id/assistances", privateRoute, async (req, res, next) => {
     }
 })
 
+router.get("/events/:event_id/assistances/:user_id", privateRoute, async (req, res, next) => {
+    try {
+        res.json(await edao.getEventsAssistancesUserId(req.params.event_id, req.params.user_id));
+    } catch (err) {
+        next ("wrongGetEvent");
+    }
+})
+
+router.post("/events/:id/assistances", privateRoute, async (req, res, next) => {
+    const owner_id = req.USER_ID;
+    try {
+        res.json(await edao.postEventsAssistancesId(req.params.id, owner_id));
+    } catch (err) {
+        next ("wrongGetEvent");
+    }
+})
 
 module.exports = router;

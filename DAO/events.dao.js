@@ -140,13 +140,36 @@ class EventsDAO {
 
         try {
                 
-            const results = await global.connection.promise().query(`SELECT user_id as id, user.name, user.last_name, user.email, assitance.puntuation, assitance.comentary FROM assitance, user  WHERE event_id = ${id} AND user.user_id = ${id}` , [tabla]);
+            const results = await global.connection.promise().query(`SELECT users.id, users.name, users.last_name, users.email, users.image, assistance.puntuation, assistance.comentary FROM users INNER JOIN assistance ON users.id = assistance.user_id WHERE assistance.event_id= ${id}`, [tabla]);
             return results;
 
         } catch (error) {
             return res.json({ error: error });
         }
+    }
 
+    async getEventsAssistancesUserId (event_id, user_id) {
+
+        try {
+                
+            const results = await global.connection.promise().query(`SELECT users.id, users.name, users.last_name, users.email, users.image, assistance.puntuation, assistance.comentary FROM users INNER JOIN assistance ON users.id = assistance.user_id WHERE users.id = ${user_id} AND assistance.event_id = ${event_id}`);
+            return results;
+
+        } catch (error) {
+            return res.json({ error: error });
+        }
+    }
+
+    async postEventsAssistancesId (event_id, user_id) {
+
+        try {
+                
+            const results = await global.connection.promise().query(`INSERT INTO assistance (user_id, event_id) VALUES (${event_id}, ${user_id})`);
+            return results;
+
+        } catch (error) {
+            return res.json({ error: error });
+        }
     }
     
     
