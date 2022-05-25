@@ -5,6 +5,8 @@ const privateRoute = require("../Middleware/private.mid");
 const UsersDAO = require("../DAO/users.dao");
 const udao = new UsersDAO();
 
+
+
 router.get("/", privateRoute, async (req, res, next) => {  //Consultar todos los usuarios, solo usuario autenticado
     res.json(await udao.getAll());
 })
@@ -13,6 +15,9 @@ router.post("/login", async (req, res, next) => {  //Login de usuario
     res.json({"accessToken" : await udao.login(req.body, next)});
 })
 
+router.get("/search", privateRoute, async (req, res, next) => {  //Consultar un usuario, solo usuario autenticado
+    res.json(await udao.getUsersSearch(req.query.s));
+})
 
 router.post("/", async (req, res, next) => {  //Añadir un usuario, encriptando la password
 
@@ -31,6 +36,19 @@ router.post("/", async (req, res, next) => {  //Añadir un usuario, encriptando 
         next (err)
     }
 })
+
+router.get("/:id" , privateRoute, async (req, res, next) => {  //Consultar un usuario, solo usuario autenticado
+    res.json(await udao.getUsersId(req.params.id));
+})
+
+
+
+
+router.get("/" , privateRoute, async (req, res, next) => {  //Consultar todos los usuarios, solo usuario autenticado
+    res.json(await udao.getAll());
+})
+
+
 
 router.put("/:id", privateRoute, async (req, res, next) => {  //Editar un usuario, solo el usuario mismo
     if (req.USER_ID === req.params.id) return next("eres tu")

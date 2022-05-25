@@ -70,35 +70,35 @@ class EventsDAO {
 
     async getEventsSearch (location, keyword, date) {
 
-        if (location != undefined && keyword != undefined && date != undefined) {
+        if (location !== undefined && keyword !== undefined && date !== undefined) {
             const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE '%${location}%' OR name LIKE '%${keyword}%' OR date LIKE '%${date}%'`, [tabla]);
         }
 
-        if (location == undefined && keyword != undefined && date != undefined) {
+        if (location === undefined && keyword !== undefined && date !== undefined) {
             const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE  name LIKE '%${keyword}%' OR date LIKE '%${date}%'`, [tabla]);
         }
 
-        if (location != undefined && keyword == undefined && date != undefined) {
+        if (location !== undefined && keyword === undefined && date !== undefined) {
             const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE '%${location}%' OR date LIKE '%${date}%'`, [tabla]);
         }
 
-        if (location != undefined && keyword != undefined && date == undefined) {
+        if (location !== undefined && keyword !== undefined && date === undefined) {
             const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE '%${location}%' OR name LIKE '%${keyword}%'`, [tabla]);
         }
 
-        if (location == undefined && keyword == undefined && date != undefined) {
+        if (location === undefined && keyword === undefined && date !== undefined) {
             const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE date LIKE '%${date}%'`, [tabla]);
         }
 
-        if (location != undefined && keyword == undefined && date == undefined) {
+        if (location !== undefined && keyword === undefined && date === undefined) {
             const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE '%${location}%'`, [tabla]);
         }
 
-        if (location == undefined && keyword != undefined && date == undefined) {
+        if (location === undefined && keyword !== undefined && date === undefined) {
             const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE name LIKE '%${keyword}%'`, [tabla]);
         }
 
-        if (results.length === 0 || location == undefined && keyword == undefined && date == undefined) {
+        if (results.length === 0 || location === undefined && keyword === undefined && date === undefined) {
 
             return res.json({ error: error });
 
