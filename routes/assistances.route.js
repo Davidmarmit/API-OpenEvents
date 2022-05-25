@@ -5,10 +5,10 @@ const privateRoute = require("../Middleware/private.mid");
 const PostsDAO = require("../DAO/assistances.dao");
 const pdao = new PostsDAO();
 
-router.get("/assistances/:user_id/:event_id", async (req, res, next) => {  //Consultar todos los posts
+router.get("/:user_id/:event_id", async (req, res, next) => {  //Consultar todos los posts
     json = await pdao.getAssistances(req.params.user_id, req.params.event_id)
 
-    if(json.error.length > 0) {
+    if(json.error) {
         res.status(404).json(json);
     } else{
         res.json(json);
@@ -19,15 +19,15 @@ router.get("/assistances/:user_id/:event_id", async (req, res, next) => {  //Con
 
 })
 
-router.post("/assistances", async (req, res, next) => {  //Consultar todos los posts
+router.post("/", async (req, res, next) => {  //Consultar todos los posts
     res.json(await pdao.postAssistances(req.params.user_id, req.params.event_id));
 })
 
-router.put("/assistances", async (req, res, next) => {  //Consultar todos los posts
+router.put("/", async (req, res, next) => {  //Consultar todos los posts
     res.json(await pdao.putAssistances(req.params.user_id, req.params.event_id,req.body));
 })
 
-router.delete("/assistances", async (req, res, next) => {  //Consultar todos los posts
+router.delete("/", async (req, res, next) => {  //Consultar todos los posts
     res.json(await pdao.deleteAssistances());
 })
 

@@ -32,7 +32,7 @@ router.post("/", async (req, res, next) => {  //Añadir un usuario, encriptando 
     req.body.password = hash
     try {
         res.json(await udao.post(req.body))
-    } catch (err) {
+    } catch (error) {
         next (err)
     }
 })

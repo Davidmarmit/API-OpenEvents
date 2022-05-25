@@ -28,8 +28,8 @@ class AssistancesDAO {
 
     async getAssistances(userId, postId) {
         //SELECT * FROM ?? WHERE idUser = 'params.idUser' AND idPost = 'params.idPost'
-        //const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE idUser = ${userId} AND idPost = ${postId}`, [tabla]);
-        if (/*results.length === 0*/ true) {
+        const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE idUser = ${userId} AND idPost = ${postId}`, [tabla]);
+        if (results.length === 0) {
             return {
                 error: "No se ha encontrado ninguna asistencia"
             }
