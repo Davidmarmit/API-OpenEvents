@@ -6,7 +6,15 @@ const PostsDAO = require("../DAO/assistances.dao");
 const pdao = new PostsDAO();
 
 router.get("/assistances/:user_id/:event_id", async (req, res, next) => {  //Consultar todos los posts
-    res.json(await pdao.getAssistances(req.params.user_id, req.params.event_id));
+    json = await pdao.getAssistances(req.params.user_id, req.params.event_id)
+
+    if(json.error.length > 0) {
+        res.status(404).json(json);
+    } else{
+        res.json(json);
+    }
+
+    //res.json(await pdao.getAssistances(req.params.user_id, req.params.event_id));
 
 
 })

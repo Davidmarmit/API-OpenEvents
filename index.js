@@ -27,7 +27,7 @@ app.use("/friends" , friendsRoute);
 app.use("/assistances" , assistances);
 
 app.get('*', (req, res) => {
-    res.json({ error: "404"});
+    res.status(404).json({ error: "404 en Index.js"});
 })
 
 app.use((err, req, res, next) => {
