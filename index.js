@@ -34,11 +34,11 @@ app.use((err, req, res, next) => {
     switch (err) {
         case "user not found":
             console.log(err)
-            res.status(404).json({ error: "el usuario y el password son incorrectos" })
+            res.status(404).json({ error: "The username and password are incorrect." })
             break;
         case "wrong password":
             console.log(err)
-            res.status(404).json({ error: "el usuario y el password son incorrectos" })
+            res.status(404).json({ error: "The username and password are incorrect." })
             break;
       default:
         res.status(500).json({ error: err })
