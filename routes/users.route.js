@@ -169,6 +169,16 @@ router.get("/:id/assistances/finished", privateRoute, async (req, res) => {
     }
 })
 
+router.get("/:id/friends", privateRoute, async (req, res) => {
+    let json = await udao.getUserFriends(req.params.id)
+    if (json.error) {
+        res.status(400).json(json);
+    }
+    else {
+        res.status(200).json(json);
+    }
+})
+
 
 
 router.get

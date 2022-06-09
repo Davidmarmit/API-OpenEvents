@@ -290,6 +290,41 @@ class UsersDAO {
             }
         }
     }
+
+    async getUserFriends(id) {
+        // SELECT * FROM ?? WHERE id = 'params.id'
+        let filteredFriends = [];
+        let f;
+        const [users] =  await global.connection.promise().query(`SELECT * FROM users`);
+        const [friends] =  await global.connection.promise().query(`SELECT * FROM friends WHERE user_id = ${id} OR user_id_friend = ${id}`);
+        for (f of friends) {
+            let u;
+            for (u of users) {
+                if ((f.user_id_friend === u.id) && f.status === 1 ) {
+                    console.log("1--->" + u.id + " =?= " + id);
+                    if(u.id != id){
+                        filteredFriends.push(u);
+                        console.log("1. Amigo: " + u.name);
+                    }
+                }
+                if ((f.user_id === u.id) && f.status === 1) {
+                    console.log("2---> " + u.id + " =?= " + id);
+                    if(u.id != id){
+                        filteredFriends.push(u);
+                        console.log("2. Amigo: " + u.name);
+                    }
+                }
+            }
+        }
+        console.log(filteredFriends);
+        if(filteredFriends.length === 0){
+            return {
+                error: "Es triste, pero no he encontrado amistades"
+            }
+        }else{
+            return filteredFriends;
+        }
+    }
 }
 
 module.exports = UsersDAO
