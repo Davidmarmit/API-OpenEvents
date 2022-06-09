@@ -31,7 +31,7 @@ class FriendsDAO {
 
     async putFriends(owner_id, friend_id) {  
         try {
-            const results = await global.connection.promise().query(`UPDATE friends SET status = 1 WHERE user_id = ${owner_id} AND user_id_friend = ${friend_id}`);
+            const results = await global.connection.promise().query(`UPDATE friends SET status = 1 WHERE user_id = ${friend_id} AND user_id_friend = ${owner_id}`);
             return results[0];
         } catch (error){
             return { error: "Missing parameter." };
