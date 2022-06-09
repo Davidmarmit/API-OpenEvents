@@ -18,7 +18,7 @@ class MessagesDAO {
     async getMessagesUser(id) {  
 
         const results = await global.connection.promise().query(`SELECT users.id, users.name, users.last_name, users.email FROM users INNER JOIN message ON users.id = message.user_id_send WHERE message.user_id_recived = ?`, [id]);
-        if (results.length === 0) {
+        if (results[0].length === 0) {
             return { error: "No tienes conversaciones con ningún usuario." };
         } else {
             return results[0];
@@ -28,7 +28,7 @@ class MessagesDAO {
     async getMessagesUserId(id, owner_id) {  
 
         const results = await global.connection.promise().query(`SELECT * FROM ?? WHERE (user_id_send = ${owner_id} AND user_id_recived = ${id}) OR (user_id_send = ${id} AND user_id_recived = ${owner_id})`, [tabla]);
-        if (results.length == 0) {
+        if (results[0].length == 0) {
             return { error: "No tienes conversaciones con este usuario." };
         } else {
             return results[0];
