@@ -5,7 +5,7 @@ const privateRoute = require("../Middleware/private.mid");
 const MessagesDAO = require("../DAO/messages.dao");
 const mdao = new MessagesDAO();
 
-router.post("/", privateRoute, async (req, res, next) => { 
+router.post("/", privateRoute, async (req, res) => {  //Enviar un mensaje
     json = await mdao.postMessage(req.body);
     if (json.error) {
         res.status(400).json(json);
@@ -14,7 +14,7 @@ router.post("/", privateRoute, async (req, res, next) => {
     }
 })
 
-router.get("/users", privateRoute, async (req, res, next) => {
+router.get("/users", privateRoute, async (req, res) => {  //Consultar mensajes de usuario autenticado
     const owner_id = req.USER_ID;
     json = await mdao.getMessagesUser(owner_id);
     if (json.error) {
@@ -24,7 +24,7 @@ router.get("/users", privateRoute, async (req, res, next) => {
     }
 })
 
-router.get("/:id", privateRoute, async (req, res, next) => {
+router.get("/:id", privateRoute, async (req, res) => {  //Consultar mensaje por id de usuario
     const owner_id = req.USER_ID;
     json = await mdao.getMessagesUserId(req.params.id, owner_id);
     if (json.error) {

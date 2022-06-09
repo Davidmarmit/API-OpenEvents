@@ -5,7 +5,7 @@ const privateRoute = require("../Middleware/private.mid");
 const FriendsDAO = require("../DAO/friends.dao");
 const fdao = new FriendsDAO();
 
-router.get("/requests", privateRoute, async (req, res, next) => {  //Consultar todos los request de friends
+router.get("/requests", privateRoute, async (req, res) => {  //Consultar todos los request de friends
     
     const id = req.USER_ID;
     json = await fdao.getFriendsRequest(id);
@@ -17,7 +17,7 @@ router.get("/requests", privateRoute, async (req, res, next) => {  //Consultar t
     }
 })
 
-router.get("/", privateRoute, async (req, res, next) => {  //Consultar todos los friends
+router.get("/", privateRoute, async (req, res) => {  //Consultar todos los friends
     
     const id = req.USER_ID;
     json = await fdao.getFriends(id);
@@ -29,7 +29,7 @@ router.get("/", privateRoute, async (req, res, next) => {  //Consultar todos los
     }
 })
 
-router.post("/:id", privateRoute, async (req, res, next) => {  //Enviar friend request a alguien
+router.post("/:id", privateRoute, async (req, res) => {  //Enviar friend request a alguien
     
     const owner_id = req.USER_ID;
     json = await fdao.postFriends(owner_id, req.params.id);
@@ -41,7 +41,7 @@ router.post("/:id", privateRoute, async (req, res, next) => {  //Enviar friend r
     }
 })
 
-router.put("/:id", privateRoute, async (req, res, next) => {  //Aceptar friend requests
+router.put("/:id", privateRoute, async (req, res) => {  //Aceptar friend requests
     
     const owner_id = req.USER_ID;
     json = await fdao.putFriends(owner_id, req.params.id);
@@ -53,7 +53,7 @@ router.put("/:id", privateRoute, async (req, res, next) => {  //Aceptar friend r
     }
 })
 
-router.delete("/:id", privateRoute, async (req, res, next) => {  //Eliminar friend requests
+router.delete("/:id", privateRoute, async (req, res) => {  //Eliminar friend requests
     
     const owner_id = req.USER_ID;
     json = await fdao.deleteFriends(owner_id, req.params.id);

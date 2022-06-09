@@ -4,7 +4,7 @@ const moment = require('moment');
 
 class EventsDAO {
 
-    async postEvent (event, owner_id) {  //añadir un nuevo event
+    async postEvent (event, owner_id) { 
 
         try {
 

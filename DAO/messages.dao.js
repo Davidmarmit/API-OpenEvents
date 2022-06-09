@@ -4,7 +4,7 @@ const moment = require('moment');
 
 class MessagesDAO {
 
-    async postMessage(message) {  //añadir un nuevo message
+    async postMessage(message) { 
     
         try {
             const add = await global.connection.promise().query(`INSERT INTO ?? (content, user_id_send, user_id_recived, timeStamp) VALUES ("${message.content}", ${message.user_id_send}, ${message.user_id_recived}, "${moment().format()}")`, [tabla]);

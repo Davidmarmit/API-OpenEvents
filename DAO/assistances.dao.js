@@ -3,7 +3,6 @@ const tabla = 'assistance';
 class AssistancesDAO {
 
     async getAssistances(userId, postId) {
-        //SELECT * FROM ?? WHERE idUser = 'params.idUser' AND idPost = 'params.idPost'
         const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE user_id = ${userId} AND event_id = ${postId}`, [tabla]);
         if (results.length === 0) {
             return {
@@ -16,15 +15,19 @@ class AssistancesDAO {
     }
 
     async postAssistances(userId, eventId) {
-        //INSERT INTO ?? (??) values (??)
-        const results = await global.connection.promise().query(`INSERT INTO ?? (user_id, event_id) VALUES (${userId}, ${eventId})`, [tabla]);
-        return {
-            message: "Asistencia añadida"
+        try {
+            const results = await global.connection.promise().query(`INSERT INTO ?? (user_id, event_id) VALUES (${userId}, ${eventId})`, [tabla]);
+            return {
+                message: "Asistencia añadida"
+            }
+        } catch (error) {
+            return {
+                error: "Ya has asistido a este evento"
+            }
         }
     }
 
     async putAssistances(userId, eventId, body) {
-        //UPDATE ?? SET ?? = ?? WHERE ?? = ?? AND ?? = ??
         let results = ""
 
         if (body.puntuation !== undefined && body.comentary === undefined) {
@@ -47,7 +50,6 @@ class AssistancesDAO {
     }
 
     async deleteAssistances(user_id, event_id) {
-        //DELETE FROM ?? WHERE ?? = ?? AND ?? = ??
         const results = await global.connection.promise().query(`DELETE FROM ?? WHERE ?? = ${user_id} AND ?? = ${event_id}`, [tabla, "user_id", "event_id"]);
         if (results[0].affectedRows === 0) {
             return {
@@ -60,7 +62,6 @@ class AssistancesDAO {
     }
 
     async getAll() {
-        //SELECT * FROM ??
         const [results] = await global.connection.promise().query(`SELECT * FROM ??`, [tabla]);
         if (results.length === 0) {
             return {

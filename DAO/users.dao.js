@@ -19,55 +19,53 @@ class UsersDAO {
 
         const jwt = require('jsonwebtoken');
         const token = jwt.sign({ id: user[0].id, email: user[0].email }, process.env.JWT_KEY/*, { expiresIn: "12h" }*/)
-        console.log("Usuario logeado correctamente: ", token);
+        console.log("Successfully logged user: ", token);
 
         return token;
     }
 
     async post(user) {
-        // INSERT INTO ?? (??) values (??)
         try {
             const [results] = global.connection.promise().query(`INSERT INTO ${tabla} (??) values (\"${user.name}\", \"${user.last_name}\", \"${user.email}\", \"${user.password}\", \"${user.image}\")`, [["name", "last_name", "email", "password", "image"]]);
             return results;
         } catch (error) {
-            return error;
+            return { error: "Missing required parameters." };
         }
     }
 
 
     async getAll() {
-        // SELECT * FROM tabla
-        const [results] = await global.connection.promise().query("SELECT * FROM ??", [tabla])
-        results[0].password = undefined;
-        return results;
+        const [results] = await global.connection.promise().query("SELECT id, name, last_name, email, image FROM ??", [tabla])
+        if (results.length === 0) {
+            return { error: "No users found." }
+        } else {
+            return results;
+        }
     }
 
     async getUsersId(id) {
-        // SELECT * FROM ?? WHERE id = 'params.id'
         const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE id = ${id}`, [tabla])
         if (results.length === 0) {
             return {
-                error: "No se encontró el usuario con el id: " + id
+                error: "User with id " + id + " not found."
             }
-        }else{
+        } else {
             results[0].password = undefined;
             return results;
         }
     }
 
     async getUsersSearch(search) {
-        // SELECT * FROM ?? WHERE name LIKE '%params.search%'
         const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE name LIKE '%${search}%'`, [tabla])
         if (results.length === 0) {
             return {
-                error: "No se encontró ningun usuario con nombre, last_name o email con : " + search
+                error: "No user with name, last_name or email with: " + search
             }
-        }else{
+        } else {
             return results[0];
         }
     }
     async update(id, body) {
-        // UPDATE tabla SET ?? = ?? WHERE id = 'params.id'
         if(body.name !== undefined){
             const [results] = await global.connection.promise().query(`UPDATE ${tabla} SET name = \"${body.name}\" WHERE id = ${id}`);
         }
@@ -85,34 +83,31 @@ class UsersDAO {
         }
         if(body.name === undefined && body.last_name === undefined && body.email === undefined && body.password === undefined && body.image === undefined){
             return {
-                error: "No se encontró ningun campo para actualizar"
+                error: "No field found to update"
             }
-        }else{
+        } else {
             const [results] = await global.connection.promise().query(`SELECT * FROM ${tabla} WHERE id = ${id}`);
             return results[0];
         }
 
     }
-    //TODO verificar que se borre el token
+
     async delete(id, requested_id) {
-        // DELETE FROM tabla WHERE id = 'params.id'
         if(requested_id === id){
             const [results] = await global.connection.promise().query(`DELETE FROM ${tabla} WHERE id = ${id}`);
             return results;
-        }
-        else{
+        } else {
             return {
-                error: "No puedes borrar otro usuario que no seas tu."
+                error: "You cannot delete another user other than yourself."
             }
         }
     }
 
     async getUserEvents(id) {
-        // SELECT * FROM ?? WHERE id = 'params.id'
         const [results] = await global.connection.promise().query(`SELECT * FROM events WHERE owner_id = ${id}`)
         if (results.length === 0) {
             return {
-                error: "No se encontró ningun evento creado por el usuario con el id: " + id
+                error: "No user-created event with id: " + id
             }
         }
         else{
@@ -121,44 +116,39 @@ class UsersDAO {
     }
 
     async getUserFutureEvents(id) {
-        // SELECT * FROM ?? WHERE id = 'params.id'
+
         let filteredEvents = [];
         const [results] = await global.connection.promise().query(`SELECT * FROM events WHERE owner_id = ${id}`)
+        
         if (results.length === 0) {
             return {
-                error: "No se encontró ningun evento creado por el usuario con el id: " + id
+                error: "No user-created event with id: " + id
             }
-        }
-        else{
+        } else {
             let e;
             for (e of results) {
+
                 let date = new Date(e.eventStart_date);
-                console.log(date);
                 if (date > new Date()) {
-                    console.log(e.name + "Es futuro");
                     filteredEvents.push(e);
                 }
             }
-            console.log(filteredEvents);
             return filteredEvents;
         }
     }
     async getUserPastEvents(id) {
-        // SELECT * FROM ?? WHERE id = 'params.id'
+
         let filteredEvents = [];
         const [results] = await global.connection.promise().query(`SELECT * FROM events WHERE owner_id = ${id}`)
         if (results.length === 0) {
             return {
-                error: "No se encontró ningun evento creado por el usuario con el id: " + id
+                error: "No user-created event with id: " + id
             }
-        }
-        else{
+        } else {
             let e;
             for (e of results) {
                 let date = new Date(e.eventEnd_date);
-                console.log(date);
                 if (date < new Date()) {
-                    console.log(e.name + "Es pasado");
                     filteredEvents.push(e);
                 }
             }
@@ -166,189 +156,178 @@ class UsersDAO {
             return filteredEvents;
         }
     }
+
     async getUserCurrentEvents(id) {
-        // SELECT * FROM ?? WHERE id = 'params.id'
+
         let filteredEvents = [];
         const [results] = await global.connection.promise().query(`SELECT * FROM events WHERE owner_id = ${id}`)
         if (results.length === 0) {
             return {
-                error: "No se encontró ningun evento creado por el usuario con el id: " + id
+                error: "No user-created event with id found: " + id
             }
-        }
-        else{
+        } else {
             let e;
             for (e of results) {
                 let date = new Date(e.eventStart_date);
-                console.log(date);
                 if (date < new Date() && date > new Date()) {
-                    console.log(e.name + "Es actual");
                     filteredEvents.push(e);
                 }
             }
-            console.log(filteredEvents);
             return filteredEvents;
         }
     }
 
     async getUserAssistances(id) {
-        // SELECT * FROM ?? WHERE id = 'params.id'
+
         let filteredEvents = [];
         const [assistances] =  await global.connection.promise().query(`SELECT * FROM assistance WHERE user_id = ${id}`);
-        console.log(assistances);
         const [events] =  await global.connection.promise().query(`SELECT * FROM events`);
+        
         if (assistances.length === 0 || events.length === 0) {
             return {
-                error: "No se encontró ningun evento creado por el usuario con el id: " + id
+                error: "No user-created event with id: " + id
             }
-        }
-        else{
+        } else {
             let e;
             for (e of events) {
                 let a;
                 for (a of assistances) {
-                    console.log("Event id: " + e.id + " =?= " + a.event_id + " :Event_id Assistance");
                     if (e.id === a.event_id) {
-                        console.log("Asistes a " + e.name);
                         filteredEvents.push(e);
                     }
                 }
             }
-            console.log(filteredEvents);
             return filteredEvents;
         }
     }
 
     async getUserAssistancesFuture(id) {
-        // SELECT * FROM ?? WHERE id = 'params.id'
+
         let filteredEvents = [];
         const [assistances] =  await global.connection.promise().query(`SELECT * FROM assistance WHERE user_id = ${id}`);
-        console.log(assistances);
         const [events] =  await global.connection.promise().query(`SELECT * FROM events`);
+        
         if (assistances.length === 0 || events.length === 0) {
             return {
-                error: "No se encontró ningun evento creado por el usuario con el id: " + id
+                error: "No user-created event with id: " + id
             }
-        }
-        else{
+        } else {
             let e;
             for (e of events) {
                 let a;
                 for (a of assistances) {
-                    console.log("Event id: " + e.id + " =?= " + a.event_id + " :Event_id Assistance");
                     if (e.id === a.event_id) {
                         let date = new Date(e.eventStart_date);
                         if(date > new Date()){
-                            console.log("Assistaras a " + e.name);
                             filteredEvents.push(e);
                         }
                     }
                 }
             }
-            console.log(filteredEvents);
+
             if(filteredEvents.length === 0){
                 return {
-                    error: "No tienes ningun evento futuro asistido por el usuario con el id: " + id
+                    error: "You don't have any future user-assisted events with the id: " + id
                 }
-            }else{
+            } else {
                 return filteredEvents;
             }
         }
     }
 
     async getUserAssistancesPast(id) {
+
         let filteredEvents = [];
         const [assistances] =  await global.connection.promise().query(`SELECT * FROM assistance WHERE user_id = ${id}`);
-        console.log(assistances);
         const [events] =  await global.connection.promise().query(`SELECT * FROM events`);
+        
         if (assistances.length === 0 || events.length === 0) {
             return {
-                error: "No se encontró ningun evento creado por el usuario con el id: " + id
+                error: "No user-created event with id: " + id
             }
-        }
-        else{
+        } else {
             let e;
             for (e of events) {
                 let a;
                 for (a of assistances) {
-                    console.log("Event id: " + e.id + " =?= " + a.event_id + " :Event_id Assistance");
                     if (e.id === a.event_id) {
                         let date = new Date(e.eventStart_date);
                         if(date < new Date()){
-                            console.log("Asististe a " + e.name);
                             filteredEvents.push(e);
                         }
                     }
                 }
             }
-            console.log(filteredEvents);
-            if(filteredEvents.length === 0){
+
+            if(filteredEvents.length === 0) {
                 return {
-                    error: "No tienes ningun evento pasado asistido por el usuario con el id: " + id
+                    error: "You don't have any past user-assisted events with the id: " + id
                 }
-            }else{
+            } else {
                 return filteredEvents;
             }
         }
     }
 
     async getUserFriends(id) {
-        // SELECT * FROM ?? WHERE id = 'params.id'
+
         let filteredFriends = [];
         let f;
         const [users] =  await global.connection.promise().query(`SELECT * FROM users`);
         const [friends] =  await global.connection.promise().query(`SELECT * FROM friends WHERE user_id = ${id} OR user_id_friend = ${id}`);
+        
         for (f of friends) {
             let u;
             for (u of users) {
+
                 if ((f.user_id_friend === u.id) && f.status === 1 ) {
-                    console.log("1--->" + u.id + " =?= " + id);
                     if(u.id != id){
                         filteredFriends.push(u);
-                        console.log("1. Amigo: " + u.name);
                     }
                 }
+
                 if ((f.user_id === u.id) && f.status === 1) {
-                    console.log("2---> " + u.id + " =?= " + id);
                     if(u.id != id){
                         filteredFriends.push(u);
-                        console.log("2. Amigo: " + u.name);
                     }
                 }
             }
         }
-        console.log(filteredFriends);
-        if(filteredFriends.length === 0){
+
+        if(filteredFriends.length === 0) {
             return {
-                error: "Es triste, pero no he encontrado amistades"
+                error: "It's sad, but I haven't found friends"
             }
-        }else{
+        } else {
             return filteredFriends;
         }
     }
 
     async getUserStatistics(id) {
+        
         const [assistances_all] =  await global.connection.promise().query(`SELECT * FROM assistance`);
         const [assistances] =  await global.connection.promise().query(`SELECT * FROM assistance WHERE user_id = ${id}`);
-        console.log(assistances);
+
         if(assistances.length === 0){
             return {
-                error: "No se encontró asistencias creadas por el usuario con el id: " + id
+                error: "No assists created by user with id: " + id
             }
-        }
-        else{
+        } else {
+
             let avg_score = 0;
             let total_score;
             let numbers = 0;
+
             for (let a of assistances) {
                 if(a.puntuation != null){
                     avg_score += a.puntuation;
                     numbers++;
                 }
             }
-            total_score = avg_score/numbers;
-            console.log(total_score + "=" + avg_score+"/"+ numbers);
 
+            total_score = avg_score/numbers;
             let num_comments = 0;
+
             for (let a of assistances) {
                 if(a.comentary != null){
                     num_comments++;
@@ -357,11 +336,13 @@ class UsersDAO {
 
             let percent = 0;
             let num_comments_all = 0;
+
             for (let a of assistances_all) {
                 if(a.comentary != null){
                     num_comments_all++;
                 }
             }
+
             percent = (num_comments/num_comments_all)*100;
 
             return {
