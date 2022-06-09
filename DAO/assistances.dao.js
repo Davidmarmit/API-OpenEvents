@@ -9,7 +9,7 @@ class AssistancesDAO {
             return {
                 error: "No se ha encontrado ninguna asistencia"
             }
-        }else{
+        } else {
             return results;
         }
 
@@ -28,15 +28,15 @@ class AssistancesDAO {
         let results = ""
 
         if (body.puntuation !== undefined && body.comentary === undefined) {
-            results = await global.connection.promise().query(`UPDATE ?? SET ?? = ${body.puntuation} WHERE ?? = ${userId} AND ?? = ${eventId}`, [tabla, "puntuation","user_id", "event_id"]);
+            results = await global.connection.promise().query(`UPDATE ?? SET ?? = ${body.puntuation} WHERE ?? = ${userId} AND ?? = ${eventId}`, [tabla, "puntuation", "user_id", "event_id"]);
         }
-        if(body.puntuation === undefined && body.comentary !== undefined){
+        if (body.puntuation === undefined && body.comentary !== undefined) {
             results = await global.connection.promise().query(`UPDATE ?? SET ?? = "${body.comentary}" WHERE user_id = ${userId} AND event_id = ${eventId}`, [tabla, "comentary"]);
         }
-        if(body.puntuation !== undefined && body.comentary !== undefined){
+        if (body.puntuation !== undefined && body.comentary !== undefined) {
             results = await global.connection.promise().query(`UPDATE ?? SET ?? = ${body.puntuation}, ?? = "${body.comentary}" WHERE user_id = ${userId} AND event_id = ${eventId}`, [tabla, "puntuation", "comentary"]);
         }
-        if(body.puntuation === undefined && body.comentary === undefined){
+        if (body.puntuation === undefined && body.comentary === undefined) {
             return {
                 error: "Petición vacia"
             }
@@ -46,18 +46,31 @@ class AssistancesDAO {
         }
     }
 
-    async deleteAssistances(user_id,event_id) {
+    async deleteAssistances(user_id, event_id) {
         //DELETE FROM ?? WHERE ?? = ?? AND ?? = ??
         const results = await global.connection.promise().query(`DELETE FROM ?? WHERE ?? = ${user_id} AND ?? = ${event_id}`, [tabla, "user_id", "event_id"]);
         if (results[0].affectedRows === 0) {
             return {
                 error: "No se ha encontrado ninguna asistencia"
             }
-        }else{
+        } else {
             return results[0];
         }
 
     }
+
+    async getAll() {
+        //SELECT * FROM ??
+        const [results] = await global.connection.promise().query(`SELECT * FROM ??`, [tabla]);
+        if (results.length === 0) {
+            return {
+                error: "No hay assistencias"
+        }
+        } else {
+            return results;
+        }
+    }
+
 }
 
 module.exports = AssistancesDAO
