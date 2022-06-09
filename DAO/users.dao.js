@@ -22,7 +22,6 @@ class UsersDAO {
         console.log("Usuario logeado correctamente: ", token);
 
         return token;
-
     }
 
     async post(user) {

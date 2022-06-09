@@ -28,7 +28,7 @@ class AssistancesDAO {
 
     async getAssistances(userId, postId) {
         //SELECT * FROM ?? WHERE idUser = 'params.idUser' AND idPost = 'params.idPost'
-        const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE idUser = ${userId} AND idPost = ${postId}`, [tabla]);
+        const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE user_id = ${userId} AND event_id = ${postId}`, [tabla]);
         if (results.length === 0) {
             return {
                 error: "No se ha encontrado ninguna asistencia"
@@ -51,18 +51,18 @@ class AssistancesDAO {
         //UPDATE ?? SET ?? = ?? WHERE ?? = ?? AND ?? = ??
         let results = ""
 
-        if (body.puntuation !== null && body.commentary === null) {
-            results = await global.connection.promise().query(`UPDATE ?? SET ?? = ?? WHERE ?? = ?? AND ?? = ??`, [tabla, "puntuation", body.puntuation, "user_id", userId, "event_id", eventId]);
+        if (body.puntuation !== undefined && body.comentary === undefined) {
+            results = await global.connection.promise().query(`UPDATE ?? SET ?? = ${body.puntuation} WHERE ?? = ${userId} AND ?? = ${eventId}`, [tabla, "puntuation","user_id", "event_id"]);
         }
-        if(body.puntuation === null && body.commentary !== null){
-            results = await global.connection.promise().query(`UPDATE ?? SET ?? = ?? WHERE ?? = ?? AND ?? = ??`, [tabla, "commentary", body.commentary, "user_id", userId, "event_id", eventId]);
+        if(body.puntuation === undefined && body.comentary !== undefined){
+            results = await global.connection.promise().query(`UPDATE ?? SET ?? = "${body.comentary}" WHERE user_id = ${userId} AND event_id = ${eventId}`, [tabla, "comentary"]);
         }
-        if(body.puntuation !== null && body.commentary !== null){
-            results = await global.connection.promise().query(`UPDATE ?? SET ?? = ??, ?? = ?? WHERE ?? = ?? AND ?? = ??`, [tabla, "puntuation", body.puntuation, "commentary", body.commentary, "user_id", userId, "event_id", eventId]);
+        if(body.puntuation !== undefined && body.comentary !== undefined){
+            results = await global.connection.promise().query(`UPDATE ?? SET ?? = ${body.puntuation}, ?? = "${body.comentary}" WHERE user_id = ${userId} AND event_id = ${eventId}`, [tabla, "puntuation", "comentary"]);
         }
-        if(body.puntuation === null && body.commentary === null){
+        if(body.puntuation === undefined && body.comentary === undefined){
             return {
-                Error: "Petición vacia"
+                error: "Petición vacia"
             }
         }
         return {
