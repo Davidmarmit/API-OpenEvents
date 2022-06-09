@@ -27,7 +27,7 @@ app.use("/friends" , friendsRoute);
 app.use("/assistances" , assistances);
 
 app.get('*', (req, res) => {
-    res.status(404).json({ error: "404 en Index.js"});
+    res.status(404).json({ error: "Route not found."});
 })
 
 app.use((err, req, res, next) => {
@@ -39,19 +39,6 @@ app.use((err, req, res, next) => {
         case "wrong password":
             console.log(err)
             res.status(404).json({ error: "el usuario y el password son incorrectos" })
-            break;
-        case "401":
-            console.log(err)
-            res.status(401).json({ error: "no tienes permisos" })
-            break;
-        case "wrongEvent":
-            res.status(400).json({error: "Error al crear el evento"});
-            break;
-        case "wrongGetEvent":
-                res.status(400).json({error: "Error al cargar los eventos"});
-                break;
-        case "errorDeleting":
-            res.status(400).json({error: "Error al eliminar los eventos"});
             break;
       default:
         res.status(500).json({ error: err })
