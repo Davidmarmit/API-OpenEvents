@@ -2,30 +2,6 @@ const tabla = 'assistance';
 
 class AssistancesDAO {
 
-    async post(comment) {  //añadir un nuevo comment
-        // INSERT INTO ?? (??) values (??)
-        const results = await global.connection.promise().query(`INSERT INTO ?? (idUser, idPost, idComent, contenido) VALUES (${comment.idUser}, ${comment.idPost}, ${comment.idComment}, "${comment.contenido}")`, [tabla]);
-        return results;
-    }
-
-    async getNumCommentsUser(idUser) {  //saber numero comentarios por id user
-        //SELECT COUNT(*) FROM ?? WHERE idUser = 'params.idUser'
-        const [results] = await global.connection.promise().query(`SELECT COUNT(*) FROM ?? WHERE idUser = ${idUser}`, [tabla]);
-        return results;
-    }
-
-    async getNumCommentsPost(idPost) {  //saber numero comentarios por id post
-        //SELECT COUNT(*) FROM ?? WHERE idPost = 'params.idPost'
-        const [results] = await global.connection.promise().query(`SELECT COUNT(*) FROM ?? WHERE idPost = ${idPost}`, [tabla]);
-        return results;
-    }
-
-    async getCommentsPost(idPost) {  //extraer comentarios de un post
-        //SELECT * FROM ?? WHERE idPost = 'params.idPost'
-        const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE idPost = ${idPost}`, [tabla]);
-        return results;
-    }
-
     async getAssistances(userId, postId) {
         //SELECT * FROM ?? WHERE idUser = 'params.idUser' AND idPost = 'params.idPost'
         const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE user_id = ${userId} AND event_id = ${postId}`, [tabla]);
@@ -68,6 +44,19 @@ class AssistancesDAO {
         return {
             message: "Asistencia actualizada"
         }
+    }
+
+    async deleteAssistances(user_id,event_id) {
+        //DELETE FROM ?? WHERE ?? = ?? AND ?? = ??
+        const results = await global.connection.promise().query(`DELETE FROM ?? WHERE ?? = ${user_id} AND ?? = ${event_id}`, [tabla, "user_id", "event_id"]);
+        if (results[0].affectedRows === 0) {
+            return {
+                error: "No se ha encontrado ninguna asistencia"
+            }
+        }else{
+            return results[0];
+        }
+
     }
 }
 

@@ -13,10 +13,6 @@ router.get("/:user_id/:event_id", async (req, res, next) => {  //Consultar todos
     } else{
         res.json(json);
     }
-
-    //res.json(await pdao.getAssistances(req.params.user_id, req.params.event_id));
-
-
 })
 
 router.post("/:user_id/:event_id", async (req, res, next) => {  //Consultar todos los posts
@@ -33,7 +29,12 @@ router.put("/:user_id/:event_id", async (req, res, next) => {  //Consultar todos
 })
 
 router.delete("/:user_id/:event_id", async (req, res, next) => {  //Consultar todos los posts
-    res.json(await pdao.deleteAssistances());
+    let json = await pdao.deleteAssistances(req.params.user_id, req.params.event_id)
+    if(json.error){
+        res.status(400).json(json);
+    }else{
+        res.status(200).json(json);
+    }
 })
 
 module.exports = router;
