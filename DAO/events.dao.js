@@ -11,60 +11,54 @@ class EventsDAO {
             const add = await global.connection.promise().query(`INSERT INTO ?? (name, owner_id, date, image, location, description, eventStart_date, eventEnd_date, n_participators, type) VALUES ("${event.name}", ${owner_id}, "${moment().format()}", "${event.image}", "${event.location}", "${event.description}", "${event.eventStart_date}", "${event.eventEnd_date}", ${event.n_participators}, "${event.type}")`, [tabla]);
             const results = await global.connection.promise().query(`SELECT name, image, location, description, eventStart_date, eventEnd_date, n_participators, type, owner_id, date FROM ?? WHERE id = "${add[0].insertId}"`, [tabla]);
             return results[0];
-
+        
         } catch (error) {
-            return res.json({ error: error });
+            return { error: "Missing required parameters." };
         }
     }
 
     async getEvents () {
-
-        try {
                 
-            const results = await global.connection.promise().query(`SELECT id, name, owner_id, date, image, location, description, eventStart_date, eventEnd_date, n_participators, slug, type FROM ?? WHERE eventStart_date > "${moment().format()}"`, [tabla]);
-            return results[0];
+        const results = await global.connection.promise().query(`SELECT id, name, owner_id, date, image, location, description, eventStart_date, eventEnd_date, n_participators, slug, type FROM ?? WHERE eventStart_date > "${moment().format()}"`, [tabla]);
 
-        } catch (error) {
-            return res.json({ error: error });
+        if (results[0].length === 0) {
+            return { error: "Any events found." };
+        } else {
+            return results[0];
         }
     }
 
     async getEventsId (id) {
-
-        try {
                 
-            const results = await global.connection.promise().query(`SELECT id, name, owner_id, date, image, location, description, eventStart_date, eventEnd_date, n_participators, slug, type FROM ?? WHERE id = ${id}`, [tabla]);
-            return results[0];
+        const results = await global.connection.promise().query(`SELECT id, name, owner_id, date, image, location, description, eventStart_date, eventEnd_date, n_participators, slug, type FROM ?? WHERE id = ${id}`, [tabla]);
 
-        } catch (error) {
-            return res.json({ error: error });
+        if (results[0].length === 0) {
+            return { error: "Not event found." };
+        } else {
+            return results[0];
         }
+        
     }
 
     async getEventsBest (id) {  //currently not implemented
-
-        console.log(id) 
-
-        try {
                 
-            const events_number =  await global.connection.promise().query(`SELECT COUNT(id) FROM assistance WHERE user_id = ${id}`, [tabla]);
+        const events_number =  await global.connection.promise().query(`SELECT COUNT(id) FROM assistance WHERE user_id = ${id}`, [tabla]);
+        const results = [];
 
-            const results = [];
+        for (let i = 0; i < events_number[0].length; i++) {
 
-            for (let i = 0; i < events_number[0].length; i++) {
+            let event = await global.connection.promise().query(`SELECT id, name, owner_id, date, image, location, description, eventStart_date, eventEnd_date, n_participators, slug, type FROM ?? WHERE id = ${id}`, [tabla]);
+            const average = await global.connection.promise().query(`SELECT AVG(puntuation) FROM assistance WHERE user_id = ${id}`, [tabla]);
+            event.avg_score = average;
 
-                let event = await global.connection.promise().query(`SELECT id, name, owner_id, date, image, location, description, eventStart_date, eventEnd_date, n_participators, slug, type FROM ?? WHERE id = ${id}`, [tabla]);
-                const average = await global.connection.promise().query(`SELECT AVG(puntuation) FROM assistance WHERE user_id = ${id}`, [tabla]);
-                event.avg_score = average;
+            results.push(event);
 
-                results.push(event);
+        }
 
-            }
-
+        if (results.length === 0) {
+            return { error: "Not events found." };
+        } else {
             return results;
-
-        } catch (error) {
-            return res.json({ error: error });
         }
     }
 
@@ -100,7 +94,7 @@ class EventsDAO {
 
         if (results.length === 0 || location === undefined && keyword === undefined && date === undefined) {
 
-            return res.json({ error: error });
+            return { error: "Not events found." };
 
         } else {
             return results;
@@ -117,7 +111,7 @@ class EventsDAO {
             return results[0];
 
         } catch (error) {
-            return res.json({ error: error });
+            return { error: "Missing required parameters." };
         }
 
     }
@@ -131,33 +125,34 @@ class EventsDAO {
             return results;
 
         } catch (error) {
-            return res.json({ error: error });
+            return { error: "Incorrect parameter." };
         }
 
     }
 
     async getEventsAssistancesId (id) {
 
-        try {
                 
-            const results = await global.connection.promise().query(`SELECT users.id, users.name, users.last_name, users.email, users.image, assistance.puntuation, assistance.comentary FROM users INNER JOIN assistance ON users.id = assistance.user_id WHERE assistance.event_id= ${id}`, [tabla]);
-            return results;
+        const results = await global.connection.promise().query(`SELECT users.id, users.name, users.last_name, users.email, users.image, assistance.puntuation, assistance.comentary FROM users INNER JOIN assistance ON users.id = assistance.user_id WHERE assistance.event_id= ${id}`, [tabla]);
 
-        } catch (error) {
-            return res.json({ error: error });
+        if (results[0].length === 0) {
+            return { error: "Not assistance found." };
+        } else {
+            return results;
         }
     }
 
     async getEventsAssistancesUserId (event_id, user_id) {
 
-        try {
                 
-            const results = await global.connection.promise().query(`SELECT users.id, users.name, users.last_name, users.email, users.image, assistance.puntuation, assistance.comentary FROM users INNER JOIN assistance ON users.id = assistance.user_id WHERE users.id = ${user_id} AND assistance.event_id = ${event_id}`);
-            return results;
+        const results = await global.connection.promise().query(`SELECT users.id, users.name, users.last_name, users.email, users.image, assistance.puntuation, assistance.comentary FROM users INNER JOIN assistance ON users.id = assistance.user_id WHERE users.id = ${user_id} AND assistance.event_id = ${event_id}`);
 
-        } catch (error) {
-            return res.json({ error: error });
+        if (results.length === 0) {
+            return { error: "Not assistance found." };
+        } else {
+            return results[0];
         }
+
     }
 
     async postEventsAssistancesId (event_id, user_id) {
@@ -165,15 +160,52 @@ class EventsDAO {
         try {
                 
             const results = await global.connection.promise().query(`INSERT INTO assistance (user_id, event_id) VALUES (${event_id}, ${user_id})`);
-            return results;
+            return results[0];
 
         } catch (error) {
-            return res.json({ error: error });
+            return { error: "Missing required parameters." };
         }
     }
-    
-    
 
+    async putEventsAssistancesId (event_id, user_id, puntuation, comentary) {
+
+        try {
+               
+            if (puntuation !== undefined && comentary !== undefined) {
+                const results = await global.connection.promise().query(`UPDATE assistance SET puntuation = ${puntuation}, comentary = "${comentary}" WHERE user_id = ${user_id} AND event_id = ${event_id}`);
+                return results[0];
+            }
+
+            if (puntuation !== undefined && comentary === undefined) {
+                const results = await global.connection.promise().query(`UPDATE assistance SET puntuation = ? WHERE user_id = ${user_id} AND event_id = ${event_id}`);
+                return results[0];
+            }
+
+            if (puntuation === undefined && comentary !== undefined) {
+                const results = await global.connection.promise().query(`UPDATE assistance SET comentary = "${comentary}" WHERE user_id = ${user_id} AND event_id = ${event_id}`);
+                return results[0];
+            }
+
+            if (puntuation === undefined && comentary === undefined) {
+                return { error: "Missing required parameters." };
+            }
+
+        } catch (error) {
+            return { error: "Missing required parameters." };
+        }
+    }
+
+    async deleteEventsAssistancesId (event_id, user_id) {
+
+        try {
+                
+            const results = await global.connection.promise().query(`DELETE FROM assistance WHERE user_id = ${user_id} AND event_id = ${event_id}`);
+            return results[0];
+
+        } catch (error) {
+            return { error: "Missing required parameters." };
+        }
+    }
 }
 
 module.exports = EventsDAO
