@@ -27,6 +27,18 @@ router.get("/", privateRoute, async (req, res) => {
     }
 })
 
+router.get("/search", privateRoute, async (req, res) => {
+    
+    json = await edao.getEventsSearch(req.query.location, req.query.keyword, req.query.date);
+    
+    if (json.error) {
+        res.status(400).json(json);
+    } else {
+        res.json(json);
+    }
+
+})
+
 router.get("/:id", privateRoute, async (req, res) => {
     
     json = await edao.getEventsId(req.params.id);
@@ -48,18 +60,6 @@ router.get("/best", privateRoute, async (req, res) => {  //currently in developm
     } else {
         res.json(json);
     }
-})
-
-router.get("/search/", privateRoute, async (req, res) => {
-    
-    json = await edao.getEventsSearch(req.query.location, req.query.keyword, req.query.date);
-    
-    if (json.error) {
-        res.status(400).json(json);
-    } else {
-        res.json(json);
-    }
-
 })
 
 router.put("/:id", privateRoute, async (req, res) => {

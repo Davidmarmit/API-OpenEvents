@@ -64,40 +64,42 @@ class EventsDAO {
 
     async getEventsSearch (location, keyword, date) {
 
+        var results = [];
+
         if (location !== undefined && keyword !== undefined && date !== undefined) {
-            const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE '%${location}%' OR name LIKE '%${keyword}%' OR date LIKE '%${date}%'`, [tabla]);
+            results = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE '%${location}%' OR name LIKE '%${keyword}%' OR date LIKE '%${date}%'`, [tabla]);
         }
 
         if (location === undefined && keyword !== undefined && date !== undefined) {
-            const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE  name LIKE '%${keyword}%' OR date LIKE '%${date}%'`, [tabla]);
+            results = await global.connection.promise().query(`SELECT * FROM ?? WHERE  name LIKE '%${keyword}%' OR date LIKE '%${date}%'`, [tabla]);
         }
 
         if (location !== undefined && keyword === undefined && date !== undefined) {
-            const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE '%${location}%' OR date LIKE '%${date}%'`, [tabla]);
+            results = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE '%${location}%' OR date LIKE '%${date}%'`, [tabla]);
         }
 
         if (location !== undefined && keyword !== undefined && date === undefined) {
-            const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE '%${location}%' OR name LIKE '%${keyword}%'`, [tabla]);
+            results = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE '%${location}%' OR name LIKE '%${keyword}%'`, [tabla]);
         }
 
         if (location === undefined && keyword === undefined && date !== undefined) {
-            const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE date LIKE '%${date}%'`, [tabla]);
+            results = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE date LIKE '%${date}%'`, [tabla]);
         }
 
         if (location !== undefined && keyword === undefined && date === undefined) {
-            const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE '%${location}%'`, [tabla]);
+            results = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE '%${location}%'`, [tabla]);
         }
 
         if (location === undefined && keyword !== undefined && date === undefined) {
-            const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE name LIKE '%${keyword}%'`, [tabla]);
+            results = await global.connection.promise().query(`SELECT * FROM ?? WHERE location LIKE name LIKE '%${keyword}%'`, [tabla]);
         }
 
-        if (results.length === 0 || location === undefined && keyword === undefined && date === undefined) {
+        if (results[0].length === 0 || location === undefined && keyword === undefined && date === undefined) {
 
             return { error: "Not events found." };
 
         } else {
-            return results;
+            return results[0];
         }
 
     }
@@ -111,21 +113,21 @@ class EventsDAO {
             return results[0];
 
         } catch (error) {
-            return { error: "Missing required parameters." };
+            return { error: "Missing required parameters (you must include all the Event atributes again)." };
         }
 
     }
 
     async deleteEvents (id) {
-
-        try {
                 
+        const verify = await global.connection.promise().query(`SELECT id FROM ?? WHERE id = ${id}`, [tabla]);
+        
+        if (verify[0].length === 0) {
+            return { error: "Not event found." };
+        } else {
             const borrar = await global.connection.promise().query(`DELETE FROM ?? WHERE id = ${id}`, [tabla]);
             const results = {"Mensaje": `${id} ha sido eliminado`};
             return results;
-
-        } catch (error) {
-            return { error: "Incorrect parameter." };
         }
 
     }
