@@ -325,6 +325,52 @@ class UsersDAO {
             return filteredFriends;
         }
     }
+
+    async getUserStatistics(id) {
+        const [assistances_all] =  await global.connection.promise().query(`SELECT * FROM assistance`);
+        const [assistances] =  await global.connection.promise().query(`SELECT * FROM assistance WHERE user_id = ${id}`);
+        console.log(assistances);
+        if(assistances.length === 0){
+            return {
+                error: "No se encontró asistencias creadas por el usuario con el id: " + id
+            }
+        }
+        else{
+            let avg_score = 0;
+            let total_score;
+            let numbers = 0;
+            for (let a of assistances) {
+                if(a.puntuation != null){
+                    avg_score += a.puntuation;
+                    numbers++;
+                }
+            }
+            total_score = avg_score/numbers;
+            console.log(total_score + "=" + avg_score+"/"+ numbers);
+
+            let num_comments = 0;
+            for (let a of assistances) {
+                if(a.comentary != null){
+                    num_comments++;
+                }
+            }
+
+            let percent = 0;
+            let num_comments_all = 0;
+            for (let a of assistances_all) {
+                if(a.comentary != null){
+                    num_comments_all++;
+                }
+            }
+            percent = (num_comments/num_comments_all)*100;
+
+            return {
+                "avg_score": total_score,
+                "num_comments": num_comments,
+                "percentage_commenters_below": percent
+            }
+        }
+    }
 }
 
 module.exports = UsersDAO

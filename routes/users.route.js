@@ -83,7 +83,7 @@ router.put("/", privateRoute, async (req, res) => {  //Editar un usuario, solo e
 
 //TODO acabar stats, coger datos de todas las asistencias, mirar que no sean undefine o null, y calcular la media de puntuation,
 router.get("/:id/statistics", privateRoute, async (req, res) => {
-    let json = await udao.getStatistics(req.params.id)
+    let json = await udao.getUserStatistics(req.params.id)
     if (json.error) {
         res.status(400).json(json);
     } else {
