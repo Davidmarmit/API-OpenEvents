@@ -40,25 +40,14 @@ class EventsDAO {
         
     }
 
-    async getEventsBest (id) {  //currently No implemented
-                
-        const events_number =  await global.connection.promise().query(`SELECT COUNT(id) FROM assistance WHERE user_id = ${id}`, [tabla]);
-        const results = [];
+    async getEventsBest () {
+        
+        const results = await global.connection.promise().query(`SELECT events.id, events.name, events.owner_id, events.date, events.image, events.location, events.description, events.eventStart_date, events.eventEnd_date, events.n_participators, events.slug, events.type, assistance.puntuation AS avg_score FROM events INNER JOIN assistance ON events.id = assistance.event_id`);
 
-        for (let i = 0; i < events_number[0].length; i++) {
-
-            let event = await global.connection.promise().query(`SELECT id, name, owner_id, date, image, location, description, eventStart_date, eventEnd_date, n_participators, slug, type FROM ?? WHERE id = ${id}`, [tabla]);
-            const average = await global.connection.promise().query(`SELECT AVG(puntuation) FROM assistance WHERE user_id = ${id}`, [tabla]);
-            event.avg_score = average;
-
-            results.push(event);
-
-        }
-
-        if (results.length === 0) {
+        if (results[0].length === 0) {
             return { error: "No events found." };
         } else {
-            return results;
+            return results[0];
         }
     }
 
@@ -178,7 +167,7 @@ class EventsDAO {
                 
         const results = await global.connection.promise().query(`SELECT users.id, users.name, users.last_name, users.email, users.image, assistance.puntuation, assistance.comentary FROM users INNER JOIN assistance ON users.id = assistance.user_id WHERE users.id = ${user_id} AND assistance.event_id = ${event_id}`);
 
-        if (results.length === 0) {
+        if (results[0].length === 0) {
             return { error: "No assistance found." };
         } else {
             return results[0];

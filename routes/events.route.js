@@ -39,10 +39,10 @@ router.get("/search", privateRoute, async (req, res) => {
 
 })
 
-router.get("/:id", privateRoute, async (req, res) => {
+router.get("/best", privateRoute, async (req, res) => {  //currently in development mode
     
-    json = await edao.getEventsId(req.params.id);
-
+    json = await edao.getEventsBest();
+    
     if (json.error) {
         res.status(400).json(json);
     } else {
@@ -50,11 +50,10 @@ router.get("/:id", privateRoute, async (req, res) => {
     }
 })
 
-router.get("/best", privateRoute, async (req, res) => {  //currently in development mode
+router.get("/:id", privateRoute, async (req, res) => {
     
-    const owner_id = req.USER_ID;
-    json = await edao.getEventsBest(1);
-    
+    json = await edao.getEventsId(req.params.id);
+
     if (json.error) {
         res.status(400).json(json);
     } else {
@@ -98,7 +97,7 @@ router.get("/:id/assistances", privateRoute, async (req, res) => {
     
 })
 
-router.get("/events/:event_id/assistances/:user_id", privateRoute, async (req, res) => {
+router.get("/:event_id/assistances/:user_id", privateRoute, async (req, res) => {
         
     json = await edao.getEventsAssistancesUserId(req.params.event_id, req.params.user_id);
 
@@ -110,7 +109,7 @@ router.get("/events/:event_id/assistances/:user_id", privateRoute, async (req, r
   
 })
 
-router.post("/events/:id/assistances", privateRoute, async (req, res) => {
+router.post("/:id/assistances", privateRoute, async (req, res) => {
     
     const owner_id = req.USER_ID;
     json = await edao.postEventsAssistancesId(req.params.id, owner_id);
@@ -123,7 +122,7 @@ router.post("/events/:id/assistances", privateRoute, async (req, res) => {
   
 })
 
-router.put("/events/:id/assistances", privateRoute, async (req, res) => {
+router.put("/:id/assistances", privateRoute, async (req, res) => {
     
     const owner_id = req.USER_ID;
     json = await edao.putEventsAssistancesId(req.params.id, owner_id, req.body.puntuation, req.body.comentary);
@@ -136,7 +135,7 @@ router.put("/events/:id/assistances", privateRoute, async (req, res) => {
    
 })
 
-router.delete("/events/:id/assistances", privateRoute, async (req, res) => {
+router.delete("/:id/assistances", privateRoute, async (req, res) => {
     const owner_id = req.USER_ID;
     json = await edao.deleteEventsAssistancesId(req.params.id, owner_id);
 
