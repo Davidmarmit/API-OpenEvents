@@ -8,7 +8,14 @@ const udao = new UsersDAO();
 
 
 router.post("/login", async (req, res, next) => {  //Login de usuario
-    res.json({"accessToken" : await udao.login(req.body, next)});
+    let token;
+
+    token = await udao.login(req.body, next)
+    if(token.error){
+        res.status(400).json({ error: token.error })
+    }else{
+        res.status(200).json({ "accessToken": token })
+    }
 })
 
 router.get("/search", privateRoute, async (req, res) => {  //Consultar un usuario, solo usuario autenticado
@@ -23,20 +30,34 @@ router.get("/search", privateRoute, async (req, res) => {  //Consultar un usuari
 
 router.post("/", async (req, res, next) => {  //Añadir un usuario, encriptando la password
 
-    let password = req.body.password
+    if(req.body.name && req.body.last_name && req.body.email && req.body.password && req.body.image){
+        let password = req.body.password
 
-    const bcrypt = require('bcrypt');
-    const saltRounds = 10;
-    const myPlaintextPassword = password;
+        const bcrypt = require('bcrypt');
+        const saltRounds = 10;
+        const myPlaintextPassword = password;
 
-    const salt = bcrypt.genSaltSync(saltRounds);
-    const hash = bcrypt.hashSync(myPlaintextPassword, salt);
-    req.body.password = hash
-    try {
-        res.json(await udao.post(req.body))
-    } catch (error) {
-        next (error)
+        const salt = bcrypt.genSaltSync(saltRounds);
+        const hash = bcrypt.hashSync(myPlaintextPassword, salt);
+        req.body.password = hash
+
+        try{
+            let json = await udao.post(req.body)
+            res.status(200).json(json);
+        }catch(err){
+            switch(err.code){
+                case "ER_DUP_ENTRY":
+                    res.status(400).json({error : "User already exists."});
+                    break;
+                default:
+                    res.status(500).json({error : "Error adding user."});
+                    break;
+            }
+        }
+    } else {
+        res.status(400).json({error : "Missing parameters"});
     }
+
 })
 
 router.get("/:id" , privateRoute, async (req, res) => {  //Consultar un usuario, solo usuario autenticado

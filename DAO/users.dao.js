@@ -6,31 +6,39 @@ const tabla = 'users';
 class UsersDAO {
 
     async login(body) {
+        if(body.email === undefined || body.password === undefined){
+            return {
+                error: "Missing parameters"
+            }
+        } else {
+            const { email, password } = body;
+            const bcrypt = require("bcrypt");
+            const [user] = await global.connection.promise().query(`SELECT * FROM users WHERE email = "${email}"`);
+            if(user.length === 0){
+                return {
+                    error: "User not found."
+                }
+            } else {
+                // si no existe el usuario
+                if (!user) return { error: "User not found." };
 
-        const { email, password } = body;
-        const bcrypt = require("bcrypt");
-        const [user] = await global.connection.promise().query(`SELECT * FROM users WHERE email = "${email}"`);
+                // si la contraseña no es correcta
+                if (!bcrypt.compareSync(password, user[0].password)) return { error: "Incorrect Username or Password." }
 
-        // si no existe el usuario
-        if (!user) return next("user not found")
+                const jwt = require('jsonwebtoken');
+                const token = jwt.sign({ id: user[0].id, email: user[0].email }, process.env.JWT_KEY/*, { expiresIn: "12h" }*/)
+                console.log("Successfully logged user: ", token);
 
-        // si la contraseña no es correcta
-        if (!bcrypt.compareSync(password, user[0].password)) return next("wrong password")
+                return token;
+            }
+        }
 
-        const jwt = require('jsonwebtoken');
-        const token = jwt.sign({ id: user[0].id, email: user[0].email }, process.env.JWT_KEY/*, { expiresIn: "12h" }*/)
-        console.log("Successfully logged user: ", token);
-
-        return token;
     }
 
     async post(user) {
-        try {
-            const [results] = global.connection.promise().query(`INSERT INTO ${tabla} (??) values (\"${user.name}\", \"${user.last_name}\", \"${user.email}\", \"${user.password}\", \"${user.image}\")`, [["name", "last_name", "email", "password", "image"]]);
-            return results;
-        } catch (error) {
-            return { error: "Missing required parameters." };
-        }
+        const [results] = await global.connection.promise().query(`INSERT INTO ${tabla} (??) values (\"${user.name}\", \"${user.last_name}\", \"${user.email}\", \"${user.password}\", \"${user.image}\")`, [["name", "last_name", "email", "password", "image"]]);
+        const [user_query] = await global.connection.promise().query(`SELECT name, last_name, email, image FROM ${tabla} WHERE id = ${results.insertId}`);
+        return user_query;
     }
 
 
@@ -93,7 +101,7 @@ class UsersDAO {
     }
 
     async delete(id, requested_id) {
-        if(requested_id === id){
+        if(requested_id == id){
             const [results] = await global.connection.promise().query(`DELETE FROM ${tabla} WHERE id = ${id}`);
             return results;
         } else {
