@@ -19,12 +19,12 @@ class EventsDAO {
 
     async getEvents () {
                 
-        const results = await global.connection.promise().query(`SELECT id, name, owner_id, date, image, location, description, eventStart_date, eventEnd_date, n_participators, slug, type FROM ?? WHERE eventStart_date > "${moment().format()}"`, [tabla]);
+        const [results] = await global.connection.promise().query(`SELECT id, name, owner_id, date, image, location, description, eventStart_date, eventEnd_date, n_participators, slug, type FROM ?? WHERE eventStart_date > "${moment().format()}"`, [tabla]);
 
         if (results[0].length === 0) {
             return { error: "Any events found." };
         } else {
-            return results[0];
+            return results;
         }
     }
 
