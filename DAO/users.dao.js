@@ -70,7 +70,7 @@ class UsersDAO {
                 error: "No user with name, last_name or email with: " + search
             }
         } else {
-            return results[0];
+            return results;
         }
     }
     async update(id, body) {
