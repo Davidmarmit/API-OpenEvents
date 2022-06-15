@@ -64,7 +64,7 @@ class UsersDAO {
     }
 
     async getUsersSearch(search) {
-        const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE name LIKE '%${search}%'`, [tabla])
+        const [results] = await global.connection.promise().query(`SELECT * FROM ?? WHERE name LIKE '%${search}%' OR last_name LIKE '%${search}%' OR email LIKE '%${search}%'`, [tabla])
         if (results.length === 0) {
             return {
                 error: "No user with name, last_name or email with: " + search
